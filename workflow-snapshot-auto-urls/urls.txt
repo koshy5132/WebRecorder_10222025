@@ -1,0 +1,12 @@
+# Workflow Snapshot - Sample URLs
+# Add your URLs here (one per line)
+# They will auto-load in the extension
+
+https://example.com
+https://httpbin.org/json
+https://jsonplaceholder.typicode.com/posts
+https://demoqa.com
+https://httpbin.org/html
+https://jsonplaceholder.typicode.com/users
+
+# Remove or replace these with your actual URLs

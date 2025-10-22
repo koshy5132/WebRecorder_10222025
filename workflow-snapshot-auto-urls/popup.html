@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Snapshot - Auto URLs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 400px; /* Increased width for better URL display */
+      padding: 12px;
+      margin: 0;
+      background: #f7f7f7;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .section {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 13px;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    #startBtn { background: #4CAF50; color: #fff; width: 100%; }
+    #stopBtn { background: #f44336; color: #fff; width: 100%; }
+    #processUrlsBtn { background: #FF9800; color: #fff; }
+    #processSelectedBtn { background: #2196F3; color: #fff; }
+    
+    /* URL Display Styles */
+    .url-item { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 6px; 
+      margin-bottom: 6px; 
+      background: #fafafa; 
+      border-radius: 4px; 
+      border: 1px solid #eee; 
+    }
+    .url-text { 
+      flex: 1; 
+      font-size: 12px; 
+      color: #0078D7; 
+      word-break: break-all; 
+      padding-right: 8px;
+      white-space: nowrap;
+      line-height: 1.3;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      overflow-wrap: normal;
+    }
+    .delete-btn { 
+      background: #ff4444; 
+      color: #fff; 
+      border: none; 
+      padding: 4px 6px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    
+    /* Auto URL Selection Styles */
+    .url-checkbox-item {
+      display: flex;
+      align-items: center;
+      padding: 6px;
+      margin-bottom: 4px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #e9ecef;
+    }
+    .url-checkbox {
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    .url-label {
+      flex: 1;
+      font-size: 12px;
+      color: #495057;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+    .selection-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .selection-btn {
+      flex: 1;
+      padding: 6px;
+      font-size: 11px;
+      background: #6c757d;
+      color: white;
+    }
+    .selection-btn:hover {
+      background: #5a6268;
+    }
+    
+    .status { 
+      text-align: center; 
+      padding: 8px; 
+      border-radius: 6px; 
+      font-size: 13px; 
+      font-weight: bold; 
+    }
+    .status.recording { 
+      background: #fff3e0; 
+      color: #e65100; 
+      border: 1px solid #ffe0b2; 
+    }
+    .status.idle { 
+      background: #e8f5e8; 
+      color: #2e7d32; 
+      border: 1px solid #c8e6c9; 
+    }
+    #urlList, #availableUrlsList {
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      padding: 4px;
+      background: #fdfdfd;
+    }
+    h4 {
+      margin: 10px 0 6px 0;
+      font-size: 13px;
+      color: #333;
+    }
+    .section-title {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .button-group button {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="section">
+      <label>Folder Prefix</label>
+      <input id="folderPrefix" placeholder="workflow" value="workflow">
+    </div>
+
+    <!-- NEW: Auto URL Selection Section -->
+    <div class="section">
+      <div class="section-title">📁 Available URLs from urls.txt</div>
+      <div class="selection-controls">
+        <button id="selectAllBtn" class="selection-btn">Select All</button>
+        <button id="selectNoneBtn" class="selection-btn">Select None</button>
+      </div>
+      <div id="availableUrlsList">
+        <div style="text-align: center; color: #666; padding: 20px;">
+          Loading URLs from urls.txt...
+        </div>
+      </div>
+      <div class="button-group">
+        <button id="processSelectedBtn">Process Selected URLs</button>
+      </div>
+    </div>
+
+    <!-- Existing Manual URL Input -->
+    <div class="section">
+      <div class="section-title">✏️ Manual URL Input</div>
+      <label>Add URL (one per line)</label>
+      <textarea id="urlsInput" rows="3" placeholder="https://example.com"></textarea>
+      <button id="addListBtn" style="margin-top:8px; width: 100%;">Add to Manual List</button>
+      <h4>Manual URLs</h4>
+      <div id="urlList"></div>
+      <div class="button-group">
+        <button id="processUrlsBtn">Process Manual URLs</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <button id="startBtn">Start Recording</button>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button id="stopBtn" style="flex:1;">Stop & Generate HTML</button>
+      </div>
+      <div id="status" class="status idle">Ready</div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

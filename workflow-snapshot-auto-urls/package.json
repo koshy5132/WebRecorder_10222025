@@ -1,0 +1,13 @@
+{
+  "name": "workflow-snapshot-auto-urls",
+  "version": "1.0.0",
+  "description": "Workflow Snapshot extension with auto URL loading from urls.txt",
+  "main": "background.js",
+  "scripts": {
+    "build": "node create-workflow-snapshot-auto-urls.js"
+  },
+  "dependencies": {
+    "archiver": "^5.3.0",
+    "canvas": "^2.11.0"
+  }
+}
